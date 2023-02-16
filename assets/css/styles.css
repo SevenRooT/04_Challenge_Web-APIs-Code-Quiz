@@ -1,0 +1,12 @@
+main {
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+}
+
+h1,
+button,
+section {
+ flex: 1 0 auto;
+}
