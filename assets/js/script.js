@@ -1,12 +1,23 @@
 // declare variables
 
-// #quizContainer is the id for <main> html
-let quizContainer = document.getElementById("quiz-container");
+// connects #startButton to function
+let startButton = document.getElementById("startButton");
 
-// theses variable will hold the test questions
+//connects id="highScorePersistent" to display of highest logged score
+const highScorePersistent = document.getElementById("highScorePersistent");
+let displayHigh = document.getElementById("displayHigh");
+
+// connects id="countDownClock" for displaying
+const countDownClock = document.getElementById("countDownClock");
+let displayTime = document.getElementById("displayTime");
+
+// #quizContainer is the id for <main> html
+let quizContainer = document.getElementById("quizContainer");
+
+// this variable will hold the test questions
 let testQuestions = document.getElementById("questions");
 
-// these variable will hold the test answers
+// this variable will hold the test answers
 let testAnswers = document.getElementById("answers");
 
 // these variables create elements on the Final Score page
@@ -20,9 +31,11 @@ let highScores = document.createElement("h2");
 let scoresList = document.createElement("ul");
 let startAgain = document.createElement("button");
 let clearScores = document.createElement("button");
+
 // variables set to empty, 0, blank, or false
 let scoreCount = 0;
 let latestScore = 0;
+let highScore = 0;
 
 let timer;
 let timerCount;
@@ -43,20 +56,67 @@ const answerList = {
  answers4: ["somewhat equal", "strictly equal", "equal", "arrow function"]
 }
 
-// The init function is called when the page loads 
+//////////////////function init()/////////////////////
+// called when the page loads 
 function init() { }
 
-// startTest function is called when the "start" button is clicked
+//////////////////function startTest()/////////////////////
+// called when the "start" button is clicked
+function startTest() {
+ //link to id="highScorePersistent" to populate with highScore
+ displayHigh.textContent = highScore;
+ timerCount = 90;
+ renderQuestion()
+ startTimer()
+}
 
-// startTimer function is called in startTest
+//////////////////function startTimer()/////////////////////
+// called in startTest
 function startTimer() {
  timer = setInterval(function () {
   timerCount--;
- })
+
+  displayTime.textContent = timerCount;
+  if (timer >= 0) {
+   if (timerCount === 0) {
+    clearInterval(timer);
+    scoreScreen();
+   }
+  }
+  // if something relating to incorrect answers will subtract time
+  if (chosenAnswer = false) {
+
+  }
+ }, 1000);
 }
 
-/* answerCheck function is connected to the #checkAnswer in html, and is called after one of the answers is clicked and checked*/
+/////////////////function renderQuestions()//////////////
+// displays test questions on the screen
+function renderQuestion() {
+ // load first question and answer pair
+ testQuestions.textContent = questionsList.question1;
+ testAnswers.textContent = answerList.answers1;
+ //loop through each key.value pair from question
+ // create an array with all object keys
+ const keys = Object.keys(questionsList);
+ // create variable to track current index
+ let currentIndex = 0;
+ // listen for click on button choice of last answer
+ /* must work for two circumstances: load 1st question on test start (should be covered in startTest function) load remaining question each time an answer is clicked */
 
+}
+
+
+
+/////////////////function answerCheck()//////////////////
+/* answerCheck function is connected to the #checkAnswer in html, and is called after one of the answers is clicked and checked*/
+// onClick event checks for correct selection
+/* correct answer: dynamically display "Correct!" until next question is loaded*/
+/* incorrect answer: dynamically displays Nope! until next question is loaded */
+
+
+
+//////////////function CollectScores()////////////////
 /* function to set scores in DOM, including a counting method for continual tallying*/
 // create an array or retrieve the existing scores from localStorage
 function collectScores() {
@@ -74,7 +134,7 @@ function collectScores() {
  localStorage.setItem("gameScores", JSON.stringify(scores));
 
  // looping through "gameScores" to identify highest score
- let highScore = 0;
+
  for (let key in scores) {
   let val = scores[key];
   if (val > highScore) {
@@ -91,7 +151,7 @@ function collectScores() {
 if (timerCount === 0) {
 
 }
-// this needs to be inside of a function
+//////////////////////function scoreScreen()/////////////////
 //function must clear screen first
 const scoreScreen = () => {
 
@@ -123,13 +183,29 @@ const scoreScreen = () => {
  quizContainer.appendChild(initialsField); //needs a function
 }
 
+///////////////////function highScoreScreen()///////////////
+// creates final screen after submit button is clicked on scoreScreen
 /* scripts associate with the High Scores page, including the "Start Again" and "Clear High Scores" buttons */
-highScores.setAttribute("id", "highScores");
+function highScoreScreen() {
+ highScores.setAttribute("id", "highScores");
 
-scoresList.setAttribute("id", "scoresList");
+ scoresList.setAttribute("id", "scoresList");
 
-startAgain.setAttribute("type", "button");
-startAgain.setAttribute("id", "startAgain");
+ startAgain.setAttribute("type", "button");
+ startAgain.setAttribute("id", "startAgain");
 
-clearScores.setAttribute("type", "button");
-clearScores.setAttribute("id", "clearScores");
+ clearScores.setAttribute("type", "button");
+ clearScores.setAttribute("id", "clearScores");
+}
+
+// Attaches event listener to start button to call startGame function on click
+startButton.addEventListener("click", startTest);
+
+// Calls init() so that it fires when page opened
+init();
+
+
+/*---------------------QUESTIONS--------------------*/
+
+// best route to append the highScore to the id="highScorePersistent"
+// same same for appending countdown to the id="countDownClock"

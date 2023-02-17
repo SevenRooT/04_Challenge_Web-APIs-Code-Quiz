@@ -1,8 +1,14 @@
+body {
+ font-family: 'Courier Prime', monospace;
+ background-color: rgb(162, 218, 252);
+}
+
 main {
  display: flex;
  flex-direction: column;
  justify-content: center;
  align-items: center;
+
 }
 
 h1,
@@ -10,3 +16,22 @@ button,
 section {
  flex: 1 0 auto;
 }
+
+#highScorePersistent {
+ position: absolute;
+ top: 20px;
+ left: 50px;
+}
+
+#countDownClock {
+ position: absolute;
+ top: 20px;
+ right: 70px;
+}
+
+#questions {
+ margin: 50px auto;
+ font-weight: 600;
+}
+
+#answers {}
