@@ -14,17 +14,19 @@ let displayTime = document.getElementById("displayTime");
 // #quizContainer is the id for <main> html
 let quizContainer = document.getElementById("quizContainer");
 
-// this variable will hold the test questions
-let testQuestions = document.getElementById("questions");
-
 // this variable will hold the test answers
-let testAnswers = document.getElementById("answers");
+let quizArea = document.getElementById("quizArea");
+let quizAreaUL = document.createElement("ul")
+quizArea.appendChild(quizAreaUL);
+// this variable will hold the test answers
+// let testAnswers = document.getElementById("answers");
 
 // these variables create elements on the Final Score page
 let scoreTitle = document.createElement("h2");
 let finalScore = document.createElement("p");
 let initialsField = document.createElement("input");
 let scoreSubmit = document.createElement("button");
+scoreSubmit.textContent = "Submit Initials and Score"
 
 // these variables create elements on the High Scores page
 let highScores = document.createElement("h2");
@@ -36,25 +38,37 @@ let clearScores = document.createElement("button");
 let scoreCount = 0;
 let latestScore = 0;
 let highScore = 0;
-
+let testScores = [];
 let timer;
 let timerCount;
+let currentIndex = 0; // references index inside "questionChoicesAnswers" array  
 
 // the test question object
 
-const questionsList = {
- question1: "What is Javascript?",
- question2: "Which of these is NOT a Javascript Data Type?",
- question3: "What is the /'this/' keyword in Javascript?",
- question4: "What is the === operator?"
-}
+const questionChoicesAnswers = [
+ {
+  question: "What is Javascript?",
+  choices: ["minified java", "object oriented programming language", "client side scripting language"],
+  answer: "client side scripting language"
+ },
+ {
+  question: "Which of these is NOT a Javascript Data Type?",
+  choices: ["value", "number", "string", "boolean"],
+  answer: "value"
+ },
+ {
+  question: "What is the /'this/' keyword in Javascript?",
+  choices: ["current selected element", "DOM element", "html element"],
+  answer: "DOM element"
+ },
+ {
+  question: "What is the === operator?",
+  choices: ["arrow function", "somewhat equal", "strictly equal", "equal"],
+  answer: "strictly equal"
+ },
+]
 
-const answerList = {
- answers1: ["minified java", "object oriented programming language", "client side scripting language"],
- answers2: ["number", "string", "boolean", "value"],
- answers3: ["current selected element", "html element", "DOM element"],
- answers4: ["somewhat equal", "strictly equal", "equal", "arrow function"]
-}
+
 
 //////////////////function init()/////////////////////
 // called when the page loads 
@@ -78,12 +92,16 @@ function startTimer() {
 
   displayTime.textContent = timerCount;
   if (timer >= 0) {
-   if (timerCount === 0) {
+   if (timerCount <= 0 || currentIndex >= questionChoicesAnswers.length) {
     clearInterval(timer);
     scoreScreen();
+    quizArea.style.display = "none";
+    // testAnswers.style.display = "none";
+    startButton.style.display = "none";
+    //needs to include items from High Score page
    }
   }
-  // if something relating to incorrect answers will subtract time
+  //  something relating to incorrect answers will subtract time
   if (chosenAnswer = false) {
 
   }
@@ -91,18 +109,45 @@ function startTimer() {
 }
 
 /////////////////function renderQuestions()//////////////
-// displays test questions on the screen
+// loads questions and multi-choice answers one at a time and leaves until an answer is clicked
 function renderQuestion() {
- // load first question and answer pair
- testQuestions.textContent = questionsList.question1;
- testAnswers.textContent = answerList.answers1;
+
  //loop through each key.value pair from question
- // create an array with all object keys
- const keys = Object.keys(questionsList);
- // create variable to track current index
- let currentIndex = 0;
- // listen for click on button choice of last answer
- /* must work for two circumstances: load 1st question on test start (should be covered in startTest function) load remaining question each time an answer is clicked */
+ // // create an array with all object keys
+ // const keys = Object.keys(questionsList);
+ // // create variable to track current index
+ // // listen for click on button choice of last answer
+ // startButton.addEventListener("click", () => {
+ //  //for (keys in questionsList) {
+ //  // const key = keys[currentIndex];
+ //  // const value = questionsList[key];
+ //  for (let i = 0; i > keys.length; currentIndex++) {
+ //   const key = keys[currentIndex];
+ //   const value = questionsList[key];
+ //   testQuestions.textContent = value;
+ //  }
+ //  if (currentIndex >= keys.length) {
+ //   currentIndex = 0;
+ //  }
+ //}
+ // })
+
+
+ // I want to load the current question on the screen
+ quizArea.innerHTML = "";
+ var newH3 = document.createElement("h3");
+ newH3.textContent = questionChoicesAnswers[currentIndex].question;
+ quizArea.append(newH3)
+
+ var arrOfChoices = questionChoicesAnswers[currentIndex].choices;
+ for (i = 0; i < arrOfChoices.length; i++) {
+  var newLi = document.createElement("button");
+  newLi.textContent = arrOfChoices[i];
+  newLi.addEventListener("click", answerCheck);
+  //quizArea.append(newLi);
+  document.body.main.children[4].quizAreaUL.appendChild(newLi);
+  //ul.append(newLi);
+ };
 
 }
 
@@ -110,28 +155,47 @@ function renderQuestion() {
 
 /////////////////function answerCheck()//////////////////
 /* answerCheck function is connected to the #checkAnswer in html, and is called after one of the answers is clicked and checked*/
-// onClick event checks for correct selection
-/* correct answer: dynamically display "Correct!" until next question is loaded*/
-/* incorrect answer: dynamically displays Nope! until next question is loaded */
+function answerCheck(event) {
+ // console.log(event)
+ // console.log(event.target)
+ // console.log(event.target.textContent)
 
+ if (event.target.textContent == questionChoicesAnswers[currentIndex].answer) {
+  console.log("correct")
+  //score increases
+ } else {
+  console.log("incorrect")
+  //time decreases
+ }
+
+ currentIndex++;
+ if (currentIndex < questionChoicesAnswers.length) {
+  renderQuestion()
+ }
+ // onClick event checks for correct selection
+ // correct answer: dynamically display "Correct!" until next question is loaded
+ // incorrect answer: dynamically displays Nope! until next question is loaded 
+ /* scores need to be collected into a variable "scoreCount"" which is totaled into "latestScore", and then pushed into "testScores" array(which is set to "[]" above), adding points each time answered correctly*/
+
+}
 
 
 //////////////function CollectScores()////////////////
 /* function to set scores in DOM, including a counting method for continual tallying*/
 // create an array or retrieve the existing scores from localStorage
 function collectScores() {
- let scores = JSON.parse(localStorage.getItem("gameScores")) || [];
+ let scores = JSON.parse(localStorage.getItem("testScores")) || [];
 
  // an object to hold the key.values pairs of scoreCount and score
  let newScore = {};
 
- // populating the gameScores array
+ // populating the testScores array
  scores.scoreCount = scoreCount;
  scores.latestScore = latestScore;
  scores.push(newScore);
 
  // Store the updated array back into localStorage
- localStorage.setItem("gameScores", JSON.stringify(scores));
+ localStorage.setItem("testScores", JSON.stringify(scores));
 
  // looping through "gameScores" to identify highest score
 
@@ -147,14 +211,9 @@ function collectScores() {
 
 /* scripts relating to when timer runs out -- screen changes to "All done!", "Your Final Score", initials text field, submit button */
 
-//hiding this screen's elements until timer runs out
-if (timerCount === 0) {
-
-}
 //////////////////////function scoreScreen()/////////////////
 //function must clear screen first
 const scoreScreen = () => {
-
 
  // code to generate the new title "All Done!"
 
@@ -164,23 +223,26 @@ const scoreScreen = () => {
  // code to generate final score <p>
 
  finalScore.setAttribute("id", "finalScore");
- finalScore.textContent = "Your Final Score " + highScore;
+ finalScore.textContent = "Your Final Score " + latestScore;
 
  // code to generate the initials field 
 
  initialsField.setAttribute("type", "text");
- initialsField.setAttribute("id", "initials-field");
+ initialsField.setAttribute("id", "initials-field"); //data needs to be captured 
+ initialsField.setAttribute("label", "text");
 
  // code to generate the submit button for initials and score
 
  scoreSubmit.setAttribute("type", "button");
  scoreSubmit.setAttribute("id", "scoreSubmit");
+ scoreSubmit.setAttribute("label", "button");
 
  // appends all final information to the #quizContainer from html
 
  quizContainer.appendChild(scoreTitle);
  quizContainer.appendChild(finalScore); //needs a function 
  quizContainer.appendChild(initialsField); //needs a function
+ quizContainer.appendChild(scoreSubmit);
 }
 
 ///////////////////function highScoreScreen()///////////////
