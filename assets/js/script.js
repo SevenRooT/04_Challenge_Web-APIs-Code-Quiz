@@ -16,10 +16,9 @@ let quizContainer = document.getElementById("quizContainer");
 
 // this variable will hold the test answers
 let quizArea = document.getElementById("quizArea");
-let quizAreaUL = document.createElement("ul")
-quizArea.appendChild(quizAreaUL);
-// this variable will hold the test answers
-// let testAnswers = document.getElementById("answers");
+
+// displays dividing line in div #checkAnswer
+let checkAnswer = document.getElementById("checkAnswer");
 
 // these variables create elements on the Final Score page
 let scoreTitle = document.createElement("h2");
@@ -111,58 +110,56 @@ function startTimer() {
 /////////////////function renderQuestions()//////////////
 // loads questions and multi-choice answers one at a time and leaves until an answer is clicked
 function renderQuestion() {
-
- //loop through each key.value pair from question
- // // create an array with all object keys
- // const keys = Object.keys(questionsList);
- // // create variable to track current index
- // // listen for click on button choice of last answer
- // startButton.addEventListener("click", () => {
- //  //for (keys in questionsList) {
- //  // const key = keys[currentIndex];
- //  // const value = questionsList[key];
- //  for (let i = 0; i > keys.length; currentIndex++) {
- //   const key = keys[currentIndex];
- //   const value = questionsList[key];
- //   testQuestions.textContent = value;
- //  }
- //  if (currentIndex >= keys.length) {
- //   currentIndex = 0;
- //  }
- //}
- // })
-
-
- // I want to load the current question on the screen
+ //  load the current question on the screen
  quizArea.innerHTML = "";
  var newH3 = document.createElement("h3");
  newH3.textContent = questionChoicesAnswers[currentIndex].question;
  quizArea.append(newH3)
 
  var arrOfChoices = questionChoicesAnswers[currentIndex].choices;
- for (i = 0; i < arrOfChoices.length; i++) {
+ for (let i = 0; i < arrOfChoices.length; i++) {
   var newLi = document.createElement("button");
   newLi.textContent = arrOfChoices[i];
   newLi.addEventListener("click", answerCheck);
-  //quizArea.append(newLi);
-  document.body.main.children[4].quizAreaUL.appendChild(newLi);
-  //ul.append(newLi);
+
+  quizArea.append(newLi);
+  newLi.style.display = "block";
+
  };
 
 }
 
-
-
 /////////////////function answerCheck()//////////////////
 /* answerCheck function is connected to the #checkAnswer in html, and is called after one of the answers is clicked and checked*/
 function answerCheck(event) {
+ //checkAnswer.innerHTML = "";
  // console.log(event)
  // console.log(event.target)
  // console.log(event.target.textContent)
 
+ // checks if the textContent of the button clicked matches the currentIndex of questionChoicesAnswers
+ /*connected to onClick event in renderQuestions, which call answerCheck() with "event" as its argument to check for correct selection*/
  if (event.target.textContent == questionChoicesAnswers[currentIndex].answer) {
+
+  // correct answer: dynamically display "Correct!" until next question is loaded
   console.log("correct")
-  //score increases
+
+  // allows checkAnswer to be displayed (style.css: set to display:none)
+  //checkAnswer.style.display = "inline";
+
+  // a timer to flash "Correct!" on the screen when answered correctly
+  let answerTimer = setTimeout(() => {
+   if (answerTimer >= 0) {
+    checkAnswer.append("Correct!");
+    checkAnswer.style.display = "inline";
+   }
+   //if (event = true) {
+   //checkAnswer.style.display = "inline";
+   //}
+   //clearTimeout(answerTimer);
+  }, 100);
+  //checkAnswer.innerHTML = "";
+  // incorrect answer: dynamically displays "Nope!" until next question is loaded 
  } else {
   console.log("incorrect")
   //time decreases
@@ -172,11 +169,11 @@ function answerCheck(event) {
  if (currentIndex < questionChoicesAnswers.length) {
   renderQuestion()
  }
- // onClick event checks for correct selection
- // correct answer: dynamically display "Correct!" until next question is loaded
- // incorrect answer: dynamically displays Nope! until next question is loaded 
- /* scores need to be collected into a variable "scoreCount"" which is totaled into "latestScore", and then pushed into "testScores" array(which is set to "[]" above), adding points each time answered correctly*/
 
+
+
+ /* scores need to be collected into a variable "scoreCount"" which is totaled into "latestScore", and then pushed into "testScores" array(which is set to "[]" above), adding points each time answered correctly*/
+ checkAnswer.innerHTML = "";
 }
 
 
