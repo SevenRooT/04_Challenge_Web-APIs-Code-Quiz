@@ -35,12 +35,13 @@ let clearScores = document.createElement("button");
 
 // variables set to empty, 0, blank, or false
 let scoreCount = 0;
-let latestScore = 0;
+let latestScore = [];
 let highScore = 0;
-let testScores = [];
+let testScores_ = [];
 let timer;
 let timerCount;
 let currentIndex = 0; // references index inside "questionChoicesAnswers" array  
+let initials = "";
 
 // the test question object
 
@@ -81,6 +82,7 @@ function startTest() {
  timerCount = 90;
  renderQuestion()
  startTimer()
+ startButton.disabled = true;
 }
 
 //////////////////function startTimer()/////////////////////
@@ -93,6 +95,7 @@ function startTimer() {
   if (timer >= 0) {
    if (timerCount <= 0 || currentIndex >= questionChoicesAnswers.length) {
     clearInterval(timer);
+    collectScores();
     scoreScreen();
     quizArea.style.display = "none";
     // testAnswers.style.display = "none";
@@ -132,10 +135,6 @@ function renderQuestion() {
 /////////////////function answerCheck()//////////////////
 /* answerCheck function is connected to the #checkAnswer in html, and is called after one of the answers is clicked and checked*/
 function answerCheck(event) {
- //checkAnswer.innerHTML = "";
- // console.log(event)
- // console.log(event.target)
- // console.log(event.target.textContent)
 
  // checks if the textContent of the button clicked matches the currentIndex of questionChoicesAnswers
  /*connected to onClick event in renderQuestions, which call answerCheck() with "event" as its argument to check for correct selection*/
@@ -150,29 +149,36 @@ function answerCheck(event) {
   // a timer to flash "Correct!" on the screen when answered correctly
   let answerTimer = setTimeout(() => {
    if (answerTimer >= 0) {
-    checkAnswer.append("Correct!");
+    checkAnswer.append("Correct");
     checkAnswer.style.display = "inline";
    }
-   //if (event = true) {
-   //checkAnswer.style.display = "inline";
-   //}
-   //clearTimeout(answerTimer);
+   scoreCount = scoreCount + 10;
   }, 100);
-  //checkAnswer.innerHTML = "";
-  // incorrect answer: dynamically displays "Nope!" until next question is loaded 
+
  } else {
+
+  // correct answer: dynamically display "Correct!" until next question is loaded
   console.log("incorrect")
-  //time decreases
+
+
+
+  // a timer to flash "Incorrect" on the screen when answered correctly
+  let answerTimer = setTimeout(() => {
+   if (answerTimer >= 0) {
+    checkAnswer.append("Incorrect");
+    checkAnswer.style.display = "inline";
+   }
+
+  }, 100);
+  timerCount = timerCount - 10;
+
  }
 
  currentIndex++;
  if (currentIndex < questionChoicesAnswers.length) {
   renderQuestion()
  }
-
-
-
- /* scores need to be collected into a variable "scoreCount"" which is totaled into "latestScore", and then pushed into "testScores" array(which is set to "[]" above), adding points each time answered correctly*/
+ /* scores need to be collected into a variable "scoreCount"" which is totaled into "latestScore", and then pushed into "testScores_" array(which is set to "[]" above), adding points each time answered correctly*/
  checkAnswer.innerHTML = "";
 }
 
@@ -181,18 +187,21 @@ function answerCheck(event) {
 /* function to set scores in DOM, including a counting method for continual tallying*/
 // create an array or retrieve the existing scores from localStorage
 function collectScores() {
- let scores = JSON.parse(localStorage.getItem("testScores")) || [];
+ latestScore = scoreCount;
+ console.log(scoreCount);
+ console.log(latestScore);
+ let scores = JSON.parse(localStorage.getItem("testScores_" + initials)) || [];
 
  // an object to hold the key.values pairs of scoreCount and score
- let newScore = {};
+ //let newScore = {};
 
- // populating the testScores array
- scores.scoreCount = scoreCount;
+ // populating the testScores_ array with key.value pairs
+ //scores.scoreCount = scoreCount;
  scores.latestScore = latestScore;
- scores.push(newScore);
+ scores.push(latestScore);
 
  // Store the updated array back into localStorage
- localStorage.setItem("testScores", JSON.stringify(scores));
+ localStorage.setItem("testScores_", JSON.stringify(scores));
 
  // looping through "gameScores" to identify highest score
 
@@ -201,6 +210,7 @@ function collectScores() {
   if (val > highScore) {
    highScore = val;
   }
+  console.log(highScore);
  }
 }
 
@@ -225,8 +235,9 @@ const scoreScreen = () => {
  // code to generate the initials field 
 
  initialsField.setAttribute("type", "text");
- initialsField.setAttribute("id", "initials-field"); //data needs to be captured 
+ initialsField.setAttribute("id", "initialsField"); //data needs to be captured 
  initialsField.setAttribute("label", "text");
+
 
  // code to generate the submit button for initials and score
 
@@ -237,9 +248,17 @@ const scoreScreen = () => {
  // appends all final information to the #quizContainer from html
 
  quizContainer.appendChild(scoreTitle);
- quizContainer.appendChild(finalScore); //needs a function 
+ quizContainer.appendChild(finalScore);
  quizContainer.appendChild(initialsField); //needs a function
  quizContainer.appendChild(scoreSubmit);
+
+ // listens for submit button to be clicked, signaling that the initials have be answered
+ scoreSubmit.addEventListener("click", function () {
+  initials = document.getElementById("initialsField").value
+ });
+ // gets initials so they can be appended to testScores_ in DOM
+ console.log(initialsField.value);
+ console.log(initials);
 }
 
 ///////////////////function highScoreScreen()///////////////
@@ -265,6 +284,3 @@ init();
 
 
 /*---------------------QUESTIONS--------------------*/
-
-// best route to append the highScore to the id="highScorePersistent"
-// same same for appending countdown to the id="countDownClock"
