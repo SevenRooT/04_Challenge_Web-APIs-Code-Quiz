@@ -34,6 +34,11 @@ section {
  font-weight: 600;
 }
 
+/* Hides "correct"or "incorrect" from the screen until answer is clicked*/
 #checkAnswer {
+ display: none;
+}
+
+#highScores {
  display: none;
 }

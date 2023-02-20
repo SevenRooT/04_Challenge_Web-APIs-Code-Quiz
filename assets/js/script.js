@@ -19,6 +19,7 @@ let quizArea = document.getElementById("quizArea");
 
 // displays dividing line in div #checkAnswer
 let checkAnswer = document.getElementById("checkAnswer");
+let highScores = document.getElementById("highScores");
 
 // these variables create elements on the Final Score page
 let scoreTitle = document.createElement("h2");
@@ -28,10 +29,13 @@ let scoreSubmit = document.createElement("button");
 scoreSubmit.textContent = "Submit Initials and Score"
 
 // these variables create elements on the High Scores page
-let highScores = document.createElement("h2");
+let highScoresTitle = document.createElement("h2");
+
 let scoresList = document.createElement("ul");
 let startAgain = document.createElement("button");
+
 let clearScores = document.createElement("button");
+
 
 // variables set to empty, 0, blank, or false
 let scoreCount = 0;
@@ -156,22 +160,14 @@ function answerCheck(event) {
   }, 100);
 
  } else {
-
-  // correct answer: dynamically display "Correct!" until next question is loaded
-  console.log("incorrect")
-
-
-
   // a timer to flash "Incorrect" on the screen when answered correctly
   let answerTimer = setTimeout(() => {
    if (answerTimer >= 0) {
     checkAnswer.append("Incorrect");
     checkAnswer.style.display = "inline";
    }
-
   }, 100);
   timerCount = timerCount - 10;
-
  }
 
  currentIndex++;
@@ -188,18 +184,30 @@ function answerCheck(event) {
 // create an array or retrieve the existing scores from localStorage
 function collectScores() {
  latestScore = scoreCount;
+
  console.log(scoreCount);
  console.log(latestScore);
+
  let scores = JSON.parse(localStorage.getItem("testScores_")) || [];
 
- scoreSubmit.addEventListener("click", addUser);
+ //for (let thisScore in latestScore) {
+ //let val = latestScore[thisScore];
+ //if (val <= 0) {
+ // latestScore[i] = val;
+ //}
+ //};
+
+ scoreSubmit.addEventListener("click", addUser, true);
+ scoreSubmit.addEventListener("click", highScoreScreen, true);
 
  function addUser() {
+
   initials = document.getElementById("initialsField").value;
   let addInitials = "testScores_" + initials;
   scores.latestScore = latestScore;
   scores.push(latestScore);
   localStorage.setItem(addInitials, JSON.stringify(scores));
+  //scores++;
  };
 
  // looping through "gameScores" to identify highest score
@@ -213,11 +221,8 @@ function collectScores() {
  }
 }
 
-
-
-/* scripts relating to when timer runs out -- screen changes to "All done!", "Your Final Score", initials text field, submit button */
-
 //////////////////////function scoreScreen()/////////////////
+/* scripts relating to when timer runs out -- screen changes to "All done!", "Your Final Score", initials text field, submit button */
 //function must clear screen first
 const scoreScreen = () => {
 
@@ -254,23 +259,39 @@ const scoreScreen = () => {
  // listens for submit button to be clicked, signaling that the initials have be answered
 
  // gets initials so they can be appended to testScores_ in DOM
- console.log(typeof initialsField.value);
- console.log(typeof initials);
+
 }
 
 ///////////////////function highScoreScreen()///////////////
+// eventListener assigning button click of scoreSubmit to hide scoreScreen and show highScoreScreen
+
 // creates final screen after submit button is clicked on scoreScreen
 /* scripts associate with the High Scores page, including the "Start Again" and "Clear High Scores" buttons */
-function highScoreScreen() {
- highScores.setAttribute("id", "highScores");
+const highScoreScreen = () => {
+ // hides quizArea items
+ quizArea.innerHTML = "";
+ startButton.style.display = "none";
+ // hides scoreScreen
+ checkAnswer.style.display = "none";
+ scoreTitle.style.display = "none";
+ finalScore.style.display = "none";
+ initialsField.style.display = "none";
+ scoreSubmit.style.display = "none";
+ // displays highScore items
+ highScores.style.display = "block";
+ highScoresTitle.textContent = "High Scores";
+ startAgain.textContent = "Test Again";
+ clearScores.textContent = "Clear High Scores"
 
  scoresList.setAttribute("id", "scoresList");
 
  startAgain.setAttribute("type", "button");
  startAgain.setAttribute("id", "startAgain");
+ startAgain.setAttribute("label", "button");
 
  clearScores.setAttribute("type", "button");
  clearScores.setAttribute("id", "clearScores");
+ clearScores.setAttribute("label", "button");
 }
 
 // Attaches event listener to start button to call startGame function on click
