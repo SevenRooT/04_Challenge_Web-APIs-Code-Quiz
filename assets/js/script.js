@@ -190,18 +190,17 @@ function collectScores() {
  latestScore = scoreCount;
  console.log(scoreCount);
  console.log(latestScore);
- let scores = JSON.parse(localStorage.getItem("testScores_" + initials)) || [];
+ let scores = JSON.parse(localStorage.getItem("testScores_")) || [];
 
- // an object to hold the key.values pairs of scoreCount and score
- //let newScore = {};
+ scoreSubmit.addEventListener("click", addUser);
 
- // populating the testScores_ array with key.value pairs
- //scores.scoreCount = scoreCount;
- scores.latestScore = latestScore;
- scores.push(latestScore);
-
- // Store the updated array back into localStorage
- localStorage.setItem("testScores_", JSON.stringify(scores));
+ function addUser() {
+  initials = document.getElementById("initialsField").value;
+  let addInitials = "testScores_" + initials;
+  scores.latestScore = latestScore;
+  scores.push(latestScore);
+  localStorage.setItem(addInitials, JSON.stringify(scores));
+ };
 
  // looping through "gameScores" to identify highest score
 
@@ -253,12 +252,10 @@ const scoreScreen = () => {
  quizContainer.appendChild(scoreSubmit);
 
  // listens for submit button to be clicked, signaling that the initials have be answered
- scoreSubmit.addEventListener("click", function () {
-  initials = document.getElementById("initialsField").value
- });
+
  // gets initials so they can be appended to testScores_ in DOM
- console.log(initialsField.value);
- console.log(initials);
+ console.log(typeof initialsField.value);
+ console.log(typeof initials);
 }
 
 ///////////////////function highScoreScreen()///////////////
