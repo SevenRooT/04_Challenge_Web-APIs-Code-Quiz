@@ -31,7 +31,8 @@ scoreSubmit.textContent = "Submit Initials and Score"
 // these variables create elements on the High Scores page
 let highScoresTitle = document.createElement("h2");
 
-let scoresList = document.createElement("ul");
+let scoresList = document.createElement("li");
+
 let startAgain = document.createElement("button");
 
 let clearScores = document.createElement("button");
@@ -76,13 +77,14 @@ const questionChoicesAnswers = [
 
 //////////////////function init()/////////////////////
 // called when the page loads 
-function init() { }
+
 
 //////////////////function startTest()/////////////////////
 // called when the "start" button is clicked
 function startTest() {
  //link to id="highScorePersistent" to populate with highScore
  displayHigh.textContent = highScore;
+
  timerCount = 90;
  renderQuestion()
  startTimer()
@@ -99,7 +101,7 @@ function startTimer() {
   if (timer >= 0) {
    if (timerCount <= 0 || currentIndex >= questionChoicesAnswers.length) {
     clearInterval(timer);
-    collectScores();
+    //collectScores();
     scoreScreen();
     quizArea.style.display = "none";
     // testAnswers.style.display = "none";
@@ -183,44 +185,32 @@ function answerCheck(event) {
 /* function to set scores in DOM, including a counting method for continual tallying*/
 // create an array or retrieve the existing scores from localStorage
 function collectScores() {
- latestScore = scoreCount;
-
- console.log(scoreCount);
- console.log(latestScore);
-
- let scores = JSON.parse(localStorage.getItem("testScores_")) || [];
-
- //for (let thisScore in latestScore) {
- //let val = latestScore[thisScore];
- //if (val <= 0) {
- // latestScore[i] = val;
- //}
- //};
-
- scoreSubmit.addEventListener("click", addUser, true);
- scoreSubmit.addEventListener("click", highScoreScreen, true);
-
- function addUser() {
-
-  initials = document.getElementById("initialsField").value;
-  let addInitials = "testScores_" + initials;
-  scores.latestScore = latestScore;
-  scores.push(latestScore);
-  localStorage.setItem(addInitials, JSON.stringify(scores));
-  //scores++;
- };
-
- // looping through "gameScores" to identify highest score
+ initials = initialsField.value;//document.getElementById("initialsField_").value;
+ let addInitials = "testScores_" + initials;  // testScores_lo
+ console.log("addInitials", addInitials);
+ const temp = localStorage.getItem(addInitials);
+ const scores = temp ? JSON.parse(temp) : [];
+ console.log("Scores", scores);
+ console.log("Initials:", addInitials);
+ scores.push(scoreCount);
+ console.log("Save Scores:", scores)
+ localStorage.setItem(addInitials, JSON.stringify(scores));
 
  for (let key in scores) {
   let val = scores[key];
   if (val > highScore) {
    highScore = val;
   }
-  console.log(highScore);
  }
-}
+ console.log("highScore:", highScore);
 
+}
+function handleClick() {
+ collectScores();
+ highScoreScreen()
+}
+scoreSubmit.addEventListener("click", handleClick, true);
+//
 //////////////////////function scoreScreen()/////////////////
 /* scripts relating to when timer runs out -- screen changes to "All done!", "Your Final Score", initials text field, submit button */
 //function must clear screen first
@@ -234,7 +224,7 @@ const scoreScreen = () => {
  // code to generate final score <p>
 
  finalScore.setAttribute("id", "finalScore");
- finalScore.textContent = "Your Final Score " + latestScore;
+ finalScore.textContent = "Your Final Score " + scoreCount;
 
  // code to generate the initials field 
 
@@ -269,7 +259,7 @@ const scoreScreen = () => {
 /* scripts associate with the High Scores page, including the "Start Again" and "Clear High Scores" buttons */
 const highScoreScreen = () => {
  // hides quizArea items
- quizArea.innerHTML = "";
+ //quizArea.innerHTML = "";
  startButton.style.display = "none";
  // hides scoreScreen
  checkAnswer.style.display = "none";
@@ -278,8 +268,10 @@ const highScoreScreen = () => {
  initialsField.style.display = "none";
  scoreSubmit.style.display = "none";
  // displays highScore items
- highScores.style.display = "block";
+ //highScores.style.display = "block";
+ highScoresTitle.setAttribute("id", "highScoresTitle");
  highScoresTitle.textContent = "High Scores";
+
  startAgain.textContent = "Test Again";
  clearScores.textContent = "Clear High Scores"
 
@@ -292,13 +284,31 @@ const highScoreScreen = () => {
  clearScores.setAttribute("type", "button");
  clearScores.setAttribute("id", "clearScores");
  clearScores.setAttribute("label", "button");
+
+ quizContainer.appendChild(highScoresTitle);
+ quizContainer.appendChild(scoresList);
+ quizContainer.appendChild(startAgain);
+ quizContainer.appendChild(clearScores);
+
+
 }
+
+// meant to trigger test to run again, but I could not make work
+function handleReTest() {
+ quizContainer.innerHTML = "";
+ startTest();
+}
+startAgain.addEventListener("click", handleReTest);
+
+// clearing all scores from the DOM Local Storage
+function clearStorage() {
+ localStorage.clear();
+}
+clearScores.addEventListener("click", clearStorage);
 
 // Attaches event listener to start button to call startGame function on click
 startButton.addEventListener("click", startTest);
 
-// Calls init() so that it fires when page opened
-init();
 
 
-/*---------------------QUESTIONS--------------------*/
+
