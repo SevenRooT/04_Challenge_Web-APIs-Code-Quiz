@@ -31,8 +31,6 @@ scoreSubmit.textContent = "Submit Initials and Score"
 // these variables create elements on the High Scores page
 let highScoresTitle = document.createElement("h2");
 
-let scoresList = document.createElement("li");
-
 let startAgain = document.createElement("button");
 
 let clearScores = document.createElement("button");
@@ -84,11 +82,15 @@ const questionChoicesAnswers = [
 function startTest() {
  //link to id="highScorePersistent" to populate with highScore
  displayHigh.textContent = highScore;
-
+ currentIndex = 0;
  timerCount = 90;
  renderQuestion()
  startTimer()
  startButton.disabled = true;
+ quizArea.style.display = "block";
+ // testAnswers.style.display = "none";
+ startButton.style.display = "block";
+ highScoresTitle.style.display = "none";
 }
 
 //////////////////function startTimer()/////////////////////
@@ -122,6 +124,7 @@ function renderQuestion() {
  //  load the current question on the screen
  quizArea.innerHTML = "";
  var newH3 = document.createElement("h3");
+
  newH3.textContent = questionChoicesAnswers[currentIndex].question;
  quizArea.append(newH3)
 
@@ -275,8 +278,6 @@ const highScoreScreen = () => {
  startAgain.textContent = "Test Again";
  clearScores.textContent = "Clear High Scores"
 
- scoresList.setAttribute("id", "scoresList");
-
  startAgain.setAttribute("type", "button");
  startAgain.setAttribute("id", "startAgain");
  startAgain.setAttribute("label", "button");
@@ -286,7 +287,6 @@ const highScoreScreen = () => {
  clearScores.setAttribute("label", "button");
 
  quizContainer.appendChild(highScoresTitle);
- quizContainer.appendChild(scoresList);
  quizContainer.appendChild(startAgain);
  quizContainer.appendChild(clearScores);
 
@@ -295,7 +295,7 @@ const highScoreScreen = () => {
 
 // meant to trigger test to run again, but I could not make work
 function handleReTest() {
- quizContainer.innerHTML = "";
+ quizArea.innerHTML = "";
  startTest();
 }
 startAgain.addEventListener("click", handleReTest);
